@@ -1,0 +1,9 @@
+
+
+.card{
+    background: linear-gradient(90deg, 
+    hsla(224, 100%, 13%, 1) 0%, hsla(195, 100%, 24%, 1) 25%, 
+    hsla(195, 100%, 33%, 1) 50%, hsla(195, 100%, 24%, 1) 75%, 
+    hsla(224, 100%, 13%, 1) 100%); 
+    color: white;
+}
