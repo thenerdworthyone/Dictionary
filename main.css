@@ -19,3 +19,21 @@
     margin:10px;
 }
 
+.WordInput{
+  padding:10px;
+  font-size:1.5rem;
+  font-weight:bold;
+  border: 2px solid rgba(57, 10, 119, 0.822) ;
+  border-radius: 10px;
+  margin:10px;
+  width:250px;
+}
+
+button[type='submit']{
+  padding: 0.6rem 1rem;
+  font-weight: bold;
+  font-size: 0.6rem;
+  background: grey;
+  border:none;
+  cursor:pointer;
+}
