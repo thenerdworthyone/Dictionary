@@ -1,7 +1,8 @@
 .Intro{
     text-align:center;
     font-size: 75%;
-    
+    color: white;
+    font-weight: bold;
 }
 
 .Card{
