@@ -5,13 +5,16 @@
 }
 
 .Card{
+    width:min(500px, 90%);
     background: linear-gradient(90deg, 
     hsla(224, 100%, 13%, 1) 0%, hsla(195, 100%, 24%, 1) 25%, 
     hsla(195, 100%, 33%, 1) 50%, hsla(195, 100%, 24%, 1) 75%, 
     hsla(224, 100%, 13%, 1) 100%); 
     color: white;
-}
+    padding: 1rem;
 
+
+}
 .DictWrap{
     display: flex;
     flex-direction: column;
@@ -19,8 +22,9 @@
     margin:10px;
 }
 
+
 .WordInput{
-  padding:10px;
+  padding: 10px;
   font-size:1.5rem;
   font-weight:bold;
   border: 2px solid rgba(57, 10, 119, 0.822) ;
@@ -29,11 +33,57 @@
   width:250px;
 }
 
-button[type='submit']{
-  padding: 0.6rem 1rem;
+.AudioDisplay{
+  width: min(150px, 90%);
+}
+
+.Section{
   font-weight: bold;
-  font-size: 0.6rem;
-  background: grey;
+  margin-top:15px;
+  font-size: 1.5rem;
+
+}
+
+body{
+  display:flex;
+  flex-direction: column;
+  background: hsla(224, 100%, 13%, 1) 100%;
+}
+
+
+button[type='submit']{
+  padding: 0.6rem 1.2rem;
+  font-weight: bold;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  background: rgb(103, 103, 105) 100%;
   border:none;
   cursor:pointer;
+}
+
+@media (max-width: 500px){
+
+   .DictAPI {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+ .WordInput{
+    width:90%;
+    max-width:300px;
+    align-self:center;
+    margin:0;
+  }
+
+ button[type='submit']{
+  width:90%;
+  max-width:300px;
+  align-self:center;
+  margin:0;
+ }
+
+ .DictWrap{
+  gap:20px;
+ }
 }
