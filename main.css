@@ -1,3 +1,7 @@
+/* key terms: section */
+@import url('https://fonts.googleapis.com/css?family=Minion+Pro');
+
+/* base structure (fixed) */
 .Intro{
     text-align:center;
     font-size: 75%;
@@ -34,21 +38,69 @@
   width:250px;
 }
 
-.AudioDisplay{
-  width: min(150px, 90%);
-}
-
-.Section{
-  font-weight: bold;
-  margin-top:15px;
-  font-size: 1.5rem;
-
-}
-
 body{
   display:flex;
   flex-direction: column;
   background: hsla(224, 100%, 13%, 1) 100%;
+}
+
+p{
+  font-family: 'Minion Pro', serif;
+}
+/* base structure  end*/
+
+
+/* specific elements that change*/
+
+.WordDisplay{
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  color: white;
+  text-align: center;
+  font-family: 'Minion Pro', serif;
+}
+
+.PhoneticDisplay{
+  font-size: 1.25rem;
+  color: white;
+  text-align: center;
+  font-family: 'Minion Pro', serif;
+}
+
+.AudioDisplay{
+  width: min(150px, 90%);
+  display: block;
+  margin: 0 auto;
+}
+
+.DefinitionDisplay{
+ text-align: left;
+ color: white;
+ font-size: 1rem;
+ font-family: 'Minion Pro', serif;
+}
+
+.LetterValue{
+  font-size: 1.25rem;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+.ErrorDisplay{
+  color: red;
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Minion Pro', serif;
+  font-weight: bold;
+}
+
+.Section{
+  font-weight: bold;
+  margin-top: 35px;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  text-align: center;
+  font-family: 'Minion Pro', serif;
 }
 
 
@@ -88,3 +140,5 @@ button[type='submit']{
   gap:20px;
  }
 }
+
+
