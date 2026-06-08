@@ -17,6 +17,10 @@
     hsla(224, 100%, 13%, 1) 100%); 
     color: white;
     padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
 
 }
