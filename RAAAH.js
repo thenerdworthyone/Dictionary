@@ -1,5 +1,5 @@
-// I blame Dutch Van Der Linde for everything if it doesn't work
-//Because he let a rat in his bandit camp, A rat named Macah Bell
+// RAAAH.js
+//BLAME VIMEAN IF THIS CODE DOESNT WORK
 
 
 
@@ -29,7 +29,7 @@ else {
  
         } 
         else {
-          displayError("Word doesn't exist / Not in database");
+          displayError("Please input a word");
         }
 
     });
@@ -39,14 +39,47 @@ async function getWord(word){
     const Dict = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
     const response = await fetch(Dict);
     if (!response.ok) { 
-        throw new Error("Failed to fetch word data");
+        throw new Error("Non-existing word data/ unable to fetch");
     }
     return await response.json();
 }
 
+function capitalize(text) {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function displayWord(data){
     console.log(data);
-        const { word, phonetic, meanings } = data[0];
+    const { word, phonetic, meanings } = data[0];
+
+    meanings.forEach(meaning => {
+         console.log("Part of Speech:", meaning.partOfSpeech);
+
+         meaning.definitions.forEach((definitionObj, index) => {
+             console.log(`${index + 1}. ${definitionObj.definition}`);
+             });
+        });
+    Card.textContent = "";
+    Card.style.display='flex';
+
+    const wordDisplay = document.createElement("h1");
+    const phoneticDisplay = document.createElement("p");
+    const audioDisplay = document.createElement("audio");
+    const definitionDisplay = document.createElement("ul");
+    const letterValue = document.createElement("p");
+
+    wordDisplay.className = "WordDisplay";
+    phoneticDisplay.className = "PhoneticDisplay";
+    audioDisplay.className = "AudioDisplay";
+    definitionDisplay.className = "DefinitionDisplay";
+    letterValue.className = "LetterValue";
+
+    wordDisplay.textContent = capitalize(word);
+
+
+
+    Card.appendChild(wordDisplay);
 
 }
 
