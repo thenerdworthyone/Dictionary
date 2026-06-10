@@ -10,3 +10,5 @@ Update: Its over, they blown up my house. im now homeless because of them ants. 
 side-update: WHO THE HELL IS CHARLES
 
 extra update: NO, I AM NOT A CONSPIRACY THEORIST, DONT LABEL ME AS A MANIAC
+
+update as of 10/6/26, so after a while, the giant ant saw a flight of stairs and it started to walk upwards on it, on a loop.

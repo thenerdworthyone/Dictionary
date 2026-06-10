@@ -35,6 +35,7 @@ else {
     });
 }
 
+//fetch
 async function getWord(word){
     const Dict = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
     const response = await fetch(Dict);
@@ -44,10 +45,12 @@ async function getWord(word){
     return await response.json();
 }
 
+//capitalise text
 function capitalize(text) {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
 
 function displayWord(data){
     console.log(data);
@@ -60,28 +63,40 @@ function displayWord(data){
              console.log(`${index + 1}. ${definitionObj.definition}`);
              });
         });
+
     Card.textContent = "";
     Card.style.display='flex';
 
-    const wordDisplay = document.createElement("h1");
-    const phoneticDisplay = document.createElement("p");
+   
+    
     const audioDisplay = document.createElement("audio");
     const definitionDisplay = document.createElement("ul");
     const letterValue = document.createElement("p");
 
-    wordDisplay.className = "WordDisplay";
-    phoneticDisplay.className = "PhoneticDisplay";
     audioDisplay.className = "AudioDisplay";
     definitionDisplay.className = "DefinitionDisplay";
     letterValue.className = "LetterValue";
 
+    //word
+    const wordDisplay = document.createElement("h1");
+    wordDisplay.className = "WordDisplay";
     wordDisplay.textContent = capitalize(word);
-
-
-
     Card.appendChild(wordDisplay);
 
+    //phonetic
+    const phoneticSection = document.createElement("p");
+    phoneticSection.className = "Section";
+    phoneticSection.textContent = "Phonetic Spelling:";
+    Card.appendChild(phoneticSection)
+
+    const phoneticDisplay = document.createElement("p");
+    phoneticDisplay.className = "PhoneticDisplay";
+    phoneticDisplay.textContent = phonetic;
+    Card.appendChild(phoneticDisplay);
+
+
 }
+
 
 function displayError(message){
     const errorDisplay = document.createElement("p");
