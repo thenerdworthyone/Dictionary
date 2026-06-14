@@ -70,11 +70,11 @@ function displayWord(data){
    
     
     const audioDisplay = document.createElement("audio");
-    const definitionDisplay = document.createElement("ul");
+
     const letterValue = document.createElement("p");
 
     audioDisplay.className = "AudioDisplay";
-    definitionDisplay.className = "DefinitionDisplay";
+    
     letterValue.className = "LetterValue";
 
     //word
@@ -87,13 +87,45 @@ function displayWord(data){
     const phoneticSection = document.createElement("p");
     phoneticSection.className = "Section";
     phoneticSection.textContent = "Phonetic Spelling:";
-    Card.appendChild(phoneticSection)
+    Card.appendChild(phoneticSection);
 
     const phoneticDisplay = document.createElement("p");
     phoneticDisplay.className = "PhoneticDisplay";
     phoneticDisplay.textContent = phonetic;
     Card.appendChild(phoneticDisplay);
 
+    //audio
+
+
+
+
+    //definitions
+    const definitionSection = document.createElement("p");
+    definitionSection.className = "Section";
+    definitionSection.textContent= "Definitions:";
+    Card.appendChild(definitionSection)
+
+
+    const definitionDisplay = document.createElement("ul");
+    definitionDisplay.className = "DefinitionDisplay";
+    meanings.forEach(meaning => {
+        meaning.definitions.forEach(definitionObj => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${capitalize(meaning.partOfSpeech)}: ${definitionObj.definition}`;
+            definitionDisplay.appendChild(listItem);
+        });
+
+    }
+    );
+    Card.appendChild(definitionDisplay);
+
+
+    //letter value
+    const letterValueSection = document.createElement("p");
+    letterValueSection.className = "Section";
+    letterValueSection.textContent = "Letter Value:";
+    Card.appendChild(letterValueSection);
+    
 
 }
 
