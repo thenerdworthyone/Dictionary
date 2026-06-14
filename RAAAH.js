@@ -125,10 +125,25 @@ function displayWord(data){
     letterValueSection.className = "Section";
     letterValueSection.textContent = "Letter Value:";
     Card.appendChild(letterValueSection);
-    
+
+
 
 }
 
+function getWordValue(letter, multiplier = 1) {
+    const scores = {
+        l:1, s:1, u:1, n:1, r:1, t:1, o:1, a:1, i:1, e:1,
+        g:2, d:2,
+        b:3, c:3, m:3, p:3,
+        k:5,
+        j:8, x:8,
+        q:10, z:10
+    };
+
+    letter = letter.toLowerCase();
+    const baseValue = scores[letter] || 0;
+    return baseValue * multiplier;
+}
 
 function displayError(message){
     const errorDisplay = document.createElement("p");
