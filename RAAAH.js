@@ -69,12 +69,6 @@ function displayWord(data){
     Card.textContent = "";
     Card.style.display='flex';
 
-   
-    
-    const audioDisplay = document.createElement("audio");
-
-    audioDisplay.className = "AudioDisplay";
-
     //word
     const wordDisplay = document.createElement("h1");
     wordDisplay.className = "WordDisplay";
@@ -96,13 +90,14 @@ function displayWord(data){
 
 
 
+    const audioDisplay = document.createElement("audio");
+    audioDisplay.className = "AudioDisplay";
 
     //definitions
     const definitionSection = document.createElement("p");
     definitionSection.className = "Section";
     definitionSection.textContent= "Definitions:";
     Card.appendChild(definitionSection)
-
 
     const definitionDisplay = document.createElement("ul");
     definitionDisplay.className = "DefinitionDisplay";
