@@ -54,7 +54,9 @@ function capitalize(text) {
 
 function displayWord(data){
     console.log(data);
-    const { word, phonetic, meanings } = data[0];
+    const { word, phonetic, meanings, phonetics } = data[0];
+
+    const phoneticText = phonetic || phonetics?.find(item => item.text)?.text || "N/A";
 
     meanings.forEach(meaning => {
          console.log("Part of Speech:", meaning.partOfSpeech);
@@ -71,11 +73,7 @@ function displayWord(data){
     
     const audioDisplay = document.createElement("audio");
 
-    const letterValue = document.createElement("p");
-
     audioDisplay.className = "AudioDisplay";
-    
-    letterValue.className = "LetterValue";
 
     //word
     const wordDisplay = document.createElement("h1");
@@ -91,7 +89,7 @@ function displayWord(data){
 
     const phoneticDisplay = document.createElement("p");
     phoneticDisplay.className = "PhoneticDisplay";
-    phoneticDisplay.textContent = phonetic;
+    phoneticDisplay.textContent = phoneticText;
     Card.appendChild(phoneticDisplay);
 
     //audio
@@ -126,24 +124,35 @@ function displayWord(data){
     letterValueSection.textContent = "Letter Value:";
     Card.appendChild(letterValueSection);
 
+   let totalValue = 0;
+   for (const char of word) {
+    totalValue += getLetterValue(char);
+    }
 
+   const letterValueDisplay = document.createElement("p");
+   letterValueDisplay.className = "LetterValue";
+   letterValueDisplay.textContent = `${totalValue} points`;
+   Card.appendChild(letterValueDisplay);
 
 }
 
-function getWordValue(letter, multiplier = 1) {
+function getLetterValue(letter, multiplier = 1) {
     const scores = {
-        l:1, s:1, u:1, n:1, r:1, t:1, o:1, a:1, i:1, e:1,
-        g:2, d:2,
-        b:3, c:3, m:3, p:3,
-        k:5,
-        j:8, x:8,
-        q:10, z:10
+        a: 1, e: 1, i: 1, o: 1, u: 1, l: 1, n: 1, s: 1, t: 1, r: 1,
+        d: 2, g: 2,
+        b: 3, c: 3, m: 3, p: 3,
+        f: 4, h: 4, v: 4, w: 4, y: 4,
+        k: 5,
+        j: 8, x: 8,
+        q: 10, z: 10
     };
 
-    letter = letter.toLowerCase();
-    const baseValue = scores[letter] || 0;
-    return baseValue * multiplier;
-}
+    if (!letter || typeof letter !== "string") return 0;
+    const normalized = letter.toLowerCase();
+    if (!/^[a-z]$/.test(normalized)) return 0;
+
+    const baseValue = scores[normalized] || 0;
+    return baseValue * multiplier;}
 
 function displayError(message){
     const errorDisplay = document.createElement("p");
