@@ -87,11 +87,28 @@ function displayWord(data){
     Card.appendChild(phoneticDisplay);
 
     //audio
+    const audioSection = document.createElement("p");
+    audioSection.className = "Section";
+    audioSection.textContent = "Audio:";
+    Card.appendChild(audioSection);
 
-
-
+    const audioUrl = phonetics?.find(item => item.audio)?.audio || "";
     const audioDisplay = document.createElement("audio");
     audioDisplay.className = "AudioDisplay";
+    audioDisplay.controls = true;
+
+    if (audioUrl) {
+        const source = document.createElement("source");
+        source.src = audioUrl;
+        source.type = "audio/mpeg";
+        audioDisplay.appendChild(source);
+    } else {
+        const noAudio = document.createElement("p");
+        noAudio.className = "NoAudioDisplay";
+        noAudio.textContent = "No audio available.";
+        Card.appendChild(noAudio);
+    }
+    Card.appendChild(audioDisplay);
 
     //definitions
     const definitionSection = document.createElement("p");
