@@ -12,3 +12,5 @@ side-update: WHO THE HELL IS CHARLES
 extra update: NO, I AM NOT A CONSPIRACY THEORIST, DONT LABEL ME AS A MANIAC
 
 update as of 10/6/26, so after a while, the giant ant saw a flight of stairs and it started to walk upwards on it, on a loop.
+
+update as of 17/6/26, so after the whole issue with the ant, im still alive thank god. But now i accidently said "Hello Neighbour" to my neighbour, and now I must break into his basement. And i think my neighbour is secretly the devil, and my life is in peril. It seem that this place was not meant for me to look and see.

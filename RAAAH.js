@@ -6,6 +6,8 @@
 const DictAPI = document.querySelector(".DictAPI");
 const WordInput = document.querySelector(".WordInput");
 const Card = document.querySelector(".Card");
+const MultiplierGUI = document.querySelector(".MultiplierControls");
+
 
 if (!DictAPI || !WordInput || !Card) {
     console.error("Missing DOM elements:", { DictAPI, WordInput, Card });

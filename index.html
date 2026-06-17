@@ -1,3 +1,5 @@
+<!--I Blame my left hand (im use right hand) -->
+
 <!DOCTYPE html>
 <head>
 <title>The scrambler</title>
@@ -12,7 +14,7 @@
   <h2>As well as an Scramble Assistant</h2>
   </div>
 </header>
-
+<!--Card -->
  <div class="DictWrap">
   <form class="DictAPI">
     <input type="text" class="WordInput" placeholder="Enter a word">
@@ -22,6 +24,38 @@
   <div class="Card" style="display:none">
 
   </div>
+<!--Multiplier GUI -->
+  <div class="multiplierGUI" style="display:none">
+    <div class="multiplierSection"> 
+      <h3> Letter multiplier </h3>
+      <div class="multiplierOptions">
+        <label>
+          <input type="radio" name="letterMultiplier" value="none" checked> None
+        </label>
+        <label>
+          <input type="radio" name="letterMultiplier" value="2"> Double (2x)
+        </label>
+        <label>
+          <input type="radio" name="letterMultiplier" value="3"> Triple (3x)
+        </label>
+     </div>
+     <p class="Guide"> Select a multiplier, then select a letter to apply.</p>
+   </div>
+
+   <div class="multiplierSection">
+     <h3> Word multiplier </h3>
+     <div class="multiplierOptions">
+       <label>
+         <input type="radio" name="wordMultiplier" value="none" checked> None
+       </label>
+       <label>
+         <input type="radio" name="wordMultiplier" value="2"> Double (2x)
+       </label>
+       <label>
+         <input type="radio" name="wordMultiplier" value="3"> Triple (3x)
+       </label>
+    </div>
+
   </div>
 </body>
 
