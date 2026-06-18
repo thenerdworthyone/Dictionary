@@ -1,5 +1,5 @@
 <!--I Blame my left hand (im use right hand) -->
-
+<!--Also blame Vimean if the code doesn't-->
 <!DOCTYPE html>
 <head>
 <title>The scrambler</title>
@@ -25,36 +25,40 @@
 
   </div>
 <!--Multiplier GUI -->
-  <div class="multiplierGUI" style="display:none">
-    <div class="multiplierSection"> 
-      <h3> Letter multiplier </h3>
-      <div class="multiplierOptions">
+  <div class="MultiplierGUI" style="display:flex">
+    <div class="MultiplierSection"> 
+     <!--letter mult -->
+      <h3> Letter Multiplier </h3>
+      <div class="MultiplierOptions">
         <label>
-          <input type="radio" name="letterMultiplier" value="none" checked> None
+          <input type="radio" name="LetterMultiplier" value="none" checked> None
         </label>
         <label>
-          <input type="radio" name="letterMultiplier" value="2"> Double (2x)
+          <input type="radio" name="LetterMultiplier" value="2"> Double (2x)
         </label>
         <label>
-          <input type="radio" name="letterMultiplier" value="3"> Triple (3x)
+          <input type="radio" name="LetterMultiplier" value="3"> Triple (3x)
         </label>
      </div>
      <p class="Guide"> Select a multiplier, then select a letter to apply.</p>
    </div>
 
-   <div class="multiplierSection">
-     <h3> Word multiplier </h3>
-     <div class="multiplierOptions">
+   <!--Word mult -->
+   <div class="MultiplierSection">
+     <h3> Word Multiplier </h3>
+     <div class="MultiplierOptions">
        <label>
-         <input type="radio" name="wordMultiplier" value="none" checked> None
+         <input type="radio" name="WordMultiplier" value="none" checked> None
        </label>
        <label>
-         <input type="radio" name="wordMultiplier" value="2"> Double (2x)
+         <input type="radio" name="WordMultiplier" value="2"> Double (2x)
        </label>
        <label>
-         <input type="radio" name="wordMultiplier" value="3"> Triple (3x)
+         <input type="radio" name="WordMultiplier" value="3"> Triple (3x)
        </label>
     </div>
+    </div>
+    <button type="button" class="ResetMultipliers">Reset Multipliers</button>
 
   </div>
 </body>

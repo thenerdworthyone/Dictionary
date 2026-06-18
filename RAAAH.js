@@ -6,7 +6,14 @@
 const DictAPI = document.querySelector(".DictAPI");
 const WordInput = document.querySelector(".WordInput");
 const Card = document.querySelector(".Card");
-const MultiplierGUI = document.querySelector(".MultiplierControls");
+const MultiplierGUI = document.querySelector(".MultiplierGUI");
+const ResetMultipliersBtn = document.querySelector(".ResetMultipliers");
+
+//multiplier terms
+let currentWord = "";
+let letterMultipliers = {}; 
+let wordMultiplier = 1;
+let currentLetterMultiplier = null;
 
 
 if (!DictAPI || !WordInput || !Card) {
@@ -36,6 +43,10 @@ else {
 
     });
 }
+
+//multiplier GUI thingy
+
+
 
 //fetch
 async function getWord(word){
