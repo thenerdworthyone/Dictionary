@@ -94,13 +94,19 @@ if (MultiplierGUI && ResetMultipliersBtn) {
     });
         //letter clicking thingy functionality (yes name is getting longer and longer)
         Card.addEventListener("click", (e) => {
-        if (!currentLetterMultiplier) return;
         
         const letterSpan = e.target.closest(".letter");
         if (!letterSpan) return;
         
         const letterIndex = parseInt(letterSpan.getAttribute("data-index"));
         if (isNaN(letterIndex)) return;
+
+        // If "none" is selected, remove any multiplier from the letter
+        if (currentLetterMultiplier === null) {
+            delete letterMultipliers[letterIndex];
+            letterSpan.classList.remove("multiplied");
+            letterSpan.removeAttribute("data-multiplier");
+        } else {
         
         // Toggle multiplier for this letter
         if (letterMultipliers[letterIndex] === currentLetterMultiplier) {
@@ -112,6 +118,7 @@ if (MultiplierGUI && ResetMultipliersBtn) {
             letterSpan.classList.add("multiplied");
             letterSpan.setAttribute("data-multiplier", `${currentLetterMultiplier}x`);
         }
+    }
         
         updateLetterValue();
     });
@@ -290,28 +297,34 @@ function updateLetterValue() {
     //Split them words apart like Moses did to the sea.
     const wordDisplay = document.querySelector(".WordDisplay");
     if (wordDisplay) {
-        if (!wordDisplay.classList.contains("interactive") && Object.keys(letterMultipliers).length === 0) {
-            wordDisplay.textContent = capitalize(currentWord);
-        } else {
-
          wordDisplay.innerHTML = "";
          for (let i = 0; i < currentWord.length; i++) {
+             const char = currentWord[i];
              const letterSpan = document.createElement("span");
              letterSpan.className = "letter";
              letterSpan.setAttribute("data-index", i);
-             letterSpan.textContent = capitalize(currentWord[i]);
+             letterSpan.textContent = capitalize(char);
+
+            const baseValue = getLetterValue(char, 1);
+            const letterMultiplier = letterMultipliers[i] || 1;
+            const letterValue = getLetterValue(char, letterMultiplier);
+            const multiplierText = letterMultiplier > 1 ? ` × ${letterMultiplier}` : "";
+            letterSpan.title = `${capitalize(char)}: ${letterValue} point${letterValue === 1 ? "" : "s"}${multiplierText}${letterMultiplier > 1 ? ` (base ${baseValue} point${baseValue === 1 ? "" : "s"})` : ""}`;
+
 
              if (letterMultipliers[i]) {
                     letterSpan.classList.add("multiplied");
                     letterSpan.setAttribute("data-multiplier", `${letterMultipliers[i]}x`);
                 }
                 wordDisplay.appendChild(letterSpan);
-            }
         }
     }
 }
- 
 
+        
+
+
+ 
 function displayError(message){
     const errorDisplay = document.createElement("p");
     errorDisplay.textContent = message;
@@ -322,4 +335,4 @@ function displayError(message){
     Card.appendChild(errorDisplay);
 }
 
- 
+             

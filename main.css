@@ -238,20 +238,24 @@ button[type='submit']{
 }
 
 /* Functions for letter multiplier (clicking) */
-.WordDisplay.interactive{
-  cursor: pointer;
+.WordDisplay{
   font-size: clamp(1.5rem, 3vw, 2.5rem);
 }
-.WordDisplay.interactive .letter{
+.WordDisplay .letter{
   display: inline-block;
   margin: 0 0.2rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   transition: all 0.2s ease;
   position: relative;
+  cursor: default;
 }
 
-.WordDisplay.interactive .letter:hover{
+.WordDisplay.interactive .letter {
+  cursor: pointer;
+}
+
+.WordDisplay .letter:hover{
   background: rgba(0, 212, 255, 0.3);
   transform: scale(1.05);
 }
