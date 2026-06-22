@@ -45,8 +45,77 @@ else {
 }
 
 //multiplier GUI thingy
+if (MultiplierGUI && ResetMultipliersBtn) {
 
+    //letter multiplier BOOT-Tons
+    document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
+        radio.addEventListener("change", (e) => {
+            currentLetterMultiplier = e.target.value === "none" ? null : parseInt(e.target.value);
+            const wordDisplay = document.querySelector(".WordDisplay");
+            if (wordDisplay) { 
+                if (currentLetterMultiplier) {
+                    wordDisplay.classList.add("interactive");
+                } else {
+                    wordDisplay.classList.remove("interactive");
+                }
+            }
+            updateLetterValue()
+        });
+    });
 
+    //Word multiplier BOOT-Tons
+    document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
+        radio.addEventListener("change", (e) => {
+            wordMultiplier = e.target.value === "none" ? 1 : parseInt(e.target.value);
+            updateLetterValue();
+        });
+    });
+
+    //Reset multipliers button
+    ResetMultipliersBtn.addEventListener("click", () => {
+        letterMultipliers = {};
+        wordMultiplier = 1;
+        currentLetterMultiplier = null;
+
+        // reset radio (aka for the interactives) buttons
+        document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "none";
+        });
+        document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "none";
+        });
+
+        const wordDisplay = document.querySelector(".WordDisplay");
+        if (wordDisplay) {
+            wordDisplay.classList.remove("interactive");
+        }
+        
+        updateLetterValue();
+    });
+        //letter clicking thingy functionality (yes name is getting longer and longer)
+        Card.addEventListener("click", (e) => {
+        if (!currentLetterMultiplier) return;
+        
+        const letterSpan = e.target.closest(".letter");
+        if (!letterSpan) return;
+        
+        const letterIndex = parseInt(letterSpan.getAttribute("data-index"));
+        if (isNaN(letterIndex)) return;
+        
+        // Toggle multiplier for this letter
+        if (letterMultipliers[letterIndex] === currentLetterMultiplier) {
+            delete letterMultipliers[letterIndex];
+            letterSpan.classList.remove("multiplied");
+            letterSpan.removeAttribute("data-multiplier");
+        } else {
+            letterMultipliers[letterIndex] = currentLetterMultiplier;
+            letterSpan.classList.add("multiplied");
+            letterSpan.setAttribute("data-multiplier", `${currentLetterMultiplier}x`);
+        }
+        
+        updateLetterValue();
+    });
+}
 
 //fetch
 async function getWord(word){
@@ -64,10 +133,26 @@ function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-
+//Display data and stuff idk
 function displayWord(data){
     console.log(data);
     const { word, phonetic, meanings, phonetics } = data[0];
+
+  //reset value when new word introduced
+    currentWord = word;
+    letterMultipliers = {};
+    wordMultiplier = 1;
+    currentLetterMultiplier = null;
+
+  // multiplier GUI reset aswell
+    if (MultiplierGUI) {
+        document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "none";
+        });
+        document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "none";
+        });
+    }
 
     const phoneticText = phonetic || phonetics?.find(item => item.text)?.text || "N/A";
 
@@ -149,18 +234,19 @@ function displayWord(data){
     letterValueSection.textContent = "Letter Value:";
     Card.appendChild(letterValueSection);
 
-   let totalValue = 0;
-   for (const char of word) {
-    totalValue += getLetterValue(char);
-    }
-
    const letterValueDisplay = document.createElement("p");
    letterValueDisplay.className = "LetterValue";
-   letterValueDisplay.textContent = `${totalValue} points`;
+   letterValueDisplay.id = "LetterValueDisplay";
    Card.appendChild(letterValueDisplay);
 
+   //make GUI visible
+    if (MultiplierGUI) {
+         MultiplierGUI.style.display = "flex";
+    }
+    updateLetterValue();
 }
 
+// FUCK, ITS MATH, VIMEAN I NEED YOU.
 function getLetterValue(letter, multiplier = 1) {
     const scores = {
         a: 1, e: 1, i: 1, o: 1, u: 1, l: 1, n: 1, s: 1, t: 1, r: 1,
@@ -177,7 +263,54 @@ function getLetterValue(letter, multiplier = 1) {
     if (!/^[a-z]$/.test(normalized)) return 0;
 
     const baseValue = scores[normalized] || 0;
-    return baseValue * multiplier;}
+    return baseValue * multiplier;
+}
+
+//UPDATE value
+function updateLetterValue() {
+    const display = document.getElementById("LetterValueDisplay");
+    if (!display) return;
+
+    let totalValue = 0
+
+    for (let i = 0; i < currentWord.length; i++) {
+        const char = currentWord[i];
+        const letterMultiplier = letterMultipliers[i] || 1;
+        totalValue += getLetterValue(char, letterMultiplier);
+    }
+
+    const finalValue = totalValue * wordMultiplier;
+    //Display what the score is being multiplied by
+    let displayText = `${finalValue} points`;
+    if (Object.keys(letterMultipliers).length > 0 || wordMultiplier > 1) {
+        displayText += ` (${totalValue} × ${wordMultiplier})`;
+    }
+    display.textContent = displayText;
+
+    //Split them words apart like Moses did to the sea.
+    const wordDisplay = document.querySelector(".WordDisplay");
+    if (wordDisplay) {
+        if (!wordDisplay.classList.contains("interactive") && Object.keys(letterMultipliers).length === 0) {
+            wordDisplay.textContent = capitalize(currentWord);
+        } else {
+
+         wordDisplay.innerHTML = "";
+         for (let i = 0; i < currentWord.length; i++) {
+             const letterSpan = document.createElement("span");
+             letterSpan.className = "letter";
+             letterSpan.setAttribute("data-index", i);
+             letterSpan.textContent = capitalize(currentWord[i]);
+
+             if (letterMultipliers[i]) {
+                    letterSpan.classList.add("multiplied");
+                    letterSpan.setAttribute("data-multiplier", `${letterMultipliers[i]}x`);
+                }
+                wordDisplay.appendChild(letterSpan);
+            }
+        }
+    }
+}
+ 
 
 function displayError(message){
     const errorDisplay = document.createElement("p");
@@ -188,3 +321,5 @@ function displayError(message){
     Card.style.display = "flex";
     Card.appendChild(errorDisplay);
 }
+
+ 
