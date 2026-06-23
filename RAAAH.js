@@ -122,6 +122,36 @@ if (MultiplierGUI && ResetMultipliersBtn) {
         
         updateLetterValue();
     });
+    
+    // Display letter value (exclusively mobile users)
+    Card.addEventListener("touchstart", (e) => {
+        const letterSpan = e.target.closest(".letter");
+        if (!letterSpan) return;
+        
+        const tooltipText = letterSpan.title;
+        if (!tooltipText) return;
+        
+        const tooltip = document.createElement("div");
+        tooltip.className = "letter-tooltip";
+        tooltip.textContent = tooltipText;
+        
+        // Position tooltip near the letter
+        const rect = letterSpan.getBoundingClientRect();
+        tooltip.style.position = "fixed";
+        tooltip.style.left = (rect.left + rect.width / 2) + "px";
+        tooltip.style.top = (rect.top - 40) + "px";
+        
+        document.body.appendChild(tooltip);
+        letterSpan._tooltip = tooltip;
+    }, true);
+
+    Card.addEventListener("touchend", (e) => {
+        const letterSpan = e.target.closest(".letter");
+        if (!letterSpan || !letterSpan._tooltip) return;
+        
+        letterSpan._tooltip.remove();
+        delete letterSpan._tooltip;
+    }, true);
 }
 
 //fetch

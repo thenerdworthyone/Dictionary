@@ -279,5 +279,18 @@ button[type='submit']{
   font-family: Arial, sans-serif;
 }
 
-
+/* Mobile displaying individual letter value */
+.letter-tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  z-index: 1000;
+  font-family: 'Minion Pro', serif;
+  pointer-events: none;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
 
