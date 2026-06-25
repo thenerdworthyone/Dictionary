@@ -8,6 +8,8 @@ const WordInput = document.querySelector(".WordInput");
 const Card = document.querySelector(".Card");
 const MultiplierGUI = document.querySelector(".MultiplierGUI");
 const ResetMultipliersBtn = document.querySelector(".ResetMultipliers");
+const HistoryToggle = document.querySelector(".HistoryToggle");
+const HistoryList = document.querySelector(".HistoryList");
 
 //multiplier terms
 let currentWord = "";
@@ -15,7 +17,20 @@ let letterMultipliers = {};
 let wordMultiplier = 1;
 let currentLetterMultiplier = null;
 
+//history
+let historyEntries = [];
 
+if (HistoryToggle && HistoryList) {
+    HistoryToggle.addEventListener("click", () => {
+        const isExpanded = HistoryToggle.getAttribute("aria-expanded") === "true";
+        HistoryToggle.setAttribute("aria-expanded", String(!isExpanded));
+        HistoryList.hidden = isExpanded;
+        HistoryToggle.classList.toggle("active", !isExpanded);
+    });
+}
+
+
+// Error catcher and logging
 if (!DictAPI || !WordInput || !Card) {
     console.error("Missing DOM elements:", { DictAPI, WordInput, Card });
 } 
@@ -170,6 +185,48 @@ function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+//history render and display 
+function renderHistory() {
+    if (!HistoryList) return;
+
+    HistoryList.innerHTML = "";
+
+    if (!historyEntries.length) {
+        const emptyState = document.createElement("p");
+        emptyState.className = "HistoryEmpty";
+        emptyState.textContent = "No recent words yet.";
+        HistoryList.appendChild(emptyState);
+        return;
+    }
+
+    historyEntries.forEach(entry => {
+        const historyItem = document.createElement("button");
+        historyItem.type = "button";
+        historyItem.className = "HistoryItem";
+        historyItem.textContent = entry.word;
+        historyItem.addEventListener("click", () => {
+            displayWord(entry.data);
+        });
+        HistoryList.appendChild(historyItem);
+    });
+}
+
+function addToHistory(data) {
+    if (!data || !Array.isArray(data) || !data[0] || !data[0].word) return;
+
+    const word = capitalize(data[0].word);
+    const existingIndex = historyEntries.findIndex(entry => entry.word.toLowerCase() === word.toLowerCase());
+
+    if (existingIndex >= 0) {
+        historyEntries.splice(existingIndex, 1);
+    }
+
+    historyEntries.unshift({ word, data });
+    historyEntries = historyEntries.slice(0, 8);
+    renderHistory();
+}
+
+
 //Display data and stuff idk
 function displayWord(data){
     console.log(data);
@@ -203,6 +260,7 @@ function displayWord(data){
 
     Card.textContent = "";
     Card.style.display='flex';
+    addToHistory(data);
 
     //word
     const wordDisplay = document.createElement("h1");
