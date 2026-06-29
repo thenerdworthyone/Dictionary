@@ -353,8 +353,8 @@ button[type='submit']{
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Easter Egg */
-.SecretVideoContainer{
+/* "video" */
+.VideoContainer{
   width: 100%;
   margin-top: 1rem;
   display: flex;
@@ -363,7 +363,7 @@ button[type='submit']{
   gap: 0.5rem;
 }
 
-.SecretVideo{
+.Video{
   width: min(100%, 480px);
   max-width: 100%;
   border-radius: 8px;

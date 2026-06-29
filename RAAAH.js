@@ -19,6 +19,8 @@ let currentLetterMultiplier = null;
 
 //history
 let historyEntries = [];
+let lastSubmittedWord = "";
+let EpicVideo = false;
 
 if (HistoryToggle && HistoryList) {
     HistoryToggle.addEventListener("click", () => {
@@ -42,6 +44,10 @@ else {
 
         if (word) {
              try{
+                 const normalizedWord = word.toLowerCase();
+                 EpicVideo = normalizedWord === "neighbour" && lastSubmittedWord === "hello";
+                 lastSubmittedWord = normalizedWord;
+
                  const wordData = await getWord(word);
                  displayWord(wordData); 
              }
@@ -169,7 +175,7 @@ if (MultiplierGUI && ResetMultipliersBtn) {
     }, true);
 }
 
-//fetch
+//fetch data
 async function getWord(word){
     const Dict = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
     const response = await fetch(Dict);
@@ -185,7 +191,7 @@ function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-//history render and display 
+//history render, display and entries 
 function renderHistory() {
     if (!HistoryList) return;
 
@@ -261,6 +267,15 @@ function displayWord(data){
     Card.textContent = "";
     Card.style.display='flex';
     addToHistory(data);
+
+    //video
+    if(EpicVideo){
+        VideoShow();
+    } else {
+        VideoHide();
+    }
+    EpicVideo = false;
+
 
     //word
     const wordDisplay = document.createElement("h1");
@@ -341,7 +356,44 @@ function displayWord(data){
     updateLetterValue();
 }
 
-// FUCK, ITS MATH, VIMEAN I NEED YOU.
+// video if available
+function VideoShow() {
+    if (!Card) return;
+
+    VideoHide()
+    const container = document.createElement("div");
+    container.className = "VideoContainer"
+
+    const heading = document.createElement("p");
+    heading.className = "Section";
+    heading.textContent = "Very Epic Video:";
+    container.appendChild(heading);
+
+    const video = document.createElement("video");
+    video.className = "Video"
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+
+    const source = document.createElement("source");
+    source.src = "Random.mp4";
+    source.type = "video/mp4";
+    video.appendChild(source);
+    container.appendChild(video);
+    Card.appendChild(container);
+}
+
+function VideoHide(){
+    if (!Card) return;
+
+    const existing = Card.querySelector(".VideoContainer");
+    if (existing) {
+        existing.remove();
+    }
+}
+
+// ITS MATH, SEA SALT I NEED YOU.
 function getLetterValue(letter, multiplier = 1) {
     const scores = {
         a: 1, e: 1, i: 1, o: 1, u: 1, l: 1, n: 1, s: 1, t: 1, r: 1,
@@ -396,7 +448,7 @@ function updateLetterValue() {
             const baseValue = getLetterValue(char, 1);
             const letterMultiplier = letterMultipliers[i] || 1;
             const letterValue = getLetterValue(char, letterMultiplier);
-            const multiplierText = letterMultiplier > 1 ? ` × ${letterMultiplier}` : "";
+            const multiplierText = letterMultiplier > 1 ? ` → ${letterMultiplier} ×`: "";
             letterSpan.title = `${capitalize(char)}: ${letterValue} point${letterValue === 1 ? "" : "s"}${multiplierText}${letterMultiplier > 1 ? ` (base ${baseValue} point${baseValue === 1 ? "" : "s"})` : ""}`;
 
 
@@ -408,8 +460,6 @@ function updateLetterValue() {
         }
     }
 }
-
-        
 
 
  
