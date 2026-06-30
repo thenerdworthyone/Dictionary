@@ -15,7 +15,7 @@ const HistoryList = document.querySelector(".HistoryList");
 let currentWord = "";
 let letterMultipliers = {}; 
 let wordMultiplier = 1;
-let currentLetterMultiplier = null;
+let currentLetterMultiplier = 0;
 
 //history
 let historyEntries = [];
@@ -71,18 +71,18 @@ if (MultiplierGUI && ResetMultipliersBtn) {
     //letter multiplier BOOT-Tons
     document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
         radio.addEventListener("change", (e) => {
-            currentLetterMultiplier = e.target.value === "none" ? null : parseInt(e.target.value);
+            currentLetterMultiplier = e.target.value === "blank" ? 0 : parseInt(e.target.value, 10);
             const wordDisplay = document.querySelector(".WordDisplay");
             if (wordDisplay) { 
-                if (currentLetterMultiplier) {
+                if (currentLetterMultiplier !== null) {
                     wordDisplay.classList.add("interactive");
                 } else {
                     wordDisplay.classList.remove("interactive");
                 }
             }
-            updateLetterValue()
+            updateLetterValue();
         });
-    });
+     });
 
     //Word multiplier BOOT-Tons
     document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
@@ -96,11 +96,11 @@ if (MultiplierGUI && ResetMultipliersBtn) {
     ResetMultipliersBtn.addEventListener("click", () => {
         letterMultipliers = {};
         wordMultiplier = 1;
-        currentLetterMultiplier = null;
+        currentLetterMultiplier = 0;
 
         // reset radio (aka for the interactives) buttons
         document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
-            radio.checked = radio.value === "none";
+            radio.checked = radio.value === "blank";
         });
         document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
             radio.checked = radio.value === "none";
@@ -122,12 +122,6 @@ if (MultiplierGUI && ResetMultipliersBtn) {
         const letterIndex = parseInt(letterSpan.getAttribute("data-index"));
         if (isNaN(letterIndex)) return;
 
-        // If "none" is selected, remove any multiplier from the letter
-        if (currentLetterMultiplier === null) {
-            delete letterMultipliers[letterIndex];
-            letterSpan.classList.remove("multiplied");
-            letterSpan.removeAttribute("data-multiplier");
-        } else {
         
         // Toggle multiplier for this letter
         if (letterMultipliers[letterIndex] === currentLetterMultiplier) {
@@ -139,8 +133,7 @@ if (MultiplierGUI && ResetMultipliersBtn) {
             letterSpan.classList.add("multiplied");
             letterSpan.setAttribute("data-multiplier", `${currentLetterMultiplier}x`);
         }
-    }
-        
+
         updateLetterValue();
     });
     
@@ -242,12 +235,12 @@ function displayWord(data){
     currentWord = word;
     letterMultipliers = {};
     wordMultiplier = 1;
-    currentLetterMultiplier = null;
+    currentLetterMultiplier = 0;
 
   // multiplier GUI reset aswell
     if (MultiplierGUI) {
         document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
-            radio.checked = radio.value === "none";
+            radio.checked = radio.value === "blank";
         });
         document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
             radio.checked = radio.value === "none";
