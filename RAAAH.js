@@ -1,8 +1,6 @@
 // RAAAH.js
 //BLAME VIMEAN IF THIS CODE DOESNT WORK
 // but put credit to me if it DOES work
-
-
 const DictAPI = document.querySelector(".DictAPI");
 const WordInput = document.querySelector(".WordInput");
 const Card = document.querySelector(".Card");
