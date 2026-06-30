@@ -74,10 +74,10 @@ if (MultiplierGUI && ResetMultipliersBtn) {
             currentLetterMultiplier = e.target.value === "blank" ? 0 : parseInt(e.target.value, 10);
             const wordDisplay = document.querySelector(".WordDisplay");
             if (wordDisplay) { 
-                if (currentLetterMultiplier !== null) {
-                    wordDisplay.classList.add("interactive");
+                if (currentLetterMultiplier > 0) {
+                 wordDisplay.classList.add("interactive");
                 } else {
-                    wordDisplay.classList.remove("interactive");
+                  wordDisplay.classList.remove("interactive");
                 }
             }
             updateLetterValue();
