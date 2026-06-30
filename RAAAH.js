@@ -8,13 +8,29 @@ const WordInput = document.querySelector(".WordInput");
 const Card = document.querySelector(".Card");
 const MultiplierGUI = document.querySelector(".MultiplierGUI");
 const ResetMultipliersBtn = document.querySelector(".ResetMultipliers");
+const HistoryToggle = document.querySelector(".HistoryToggle");
+const HistoryList = document.querySelector(".HistoryList");
+const ForceWordBtn = document.querySelector(".ForceWordBtn");
 
 //multiplier terms
 let currentWord = "";
 let letterMultipliers = {}; 
 let wordMultiplier = 1;
-let currentLetterMultiplier = null;
+let currentLetterMultiplier = 0;
+let currentWordMode = "normal";
+let historyEntries = [];
+let lastSubmittedWord = "";
+let shouldRevealSecretVideo = false;
 
+
+if (HistoryToggle && HistoryList) {
+    HistoryToggle.addEventListener("click", () => {
+        const isExpanded = HistoryToggle.getAttribute("aria-expanded") === "true";
+        HistoryToggle.setAttribute("aria-expanded", String(!isExpanded));
+        HistoryList.hidden = isExpanded;
+        HistoryToggle.classList.toggle("active", !isExpanded);
+    });
+}
 
 if (!DictAPI || !WordInput || !Card) {
     console.error("Missing DOM elements:", { DictAPI, WordInput, Card });
@@ -27,13 +43,17 @@ else {
 
         if (word) {
              try{
+                 const normalizedWord = word.toLowerCase();
+                 shouldRevealSecretVideo = normalizedWord === "neighbour" && lastSubmittedWord === "hello";
+                 lastSubmittedWord = normalizedWord;
+
                  const wordData = await getWord(word);
                  displayWord(wordData); 
              }
   
               catch (error){
                   console.error(error);
-                 displayError(error);
+                 displayError(error.message || error, word);
               }
  
         } 
@@ -44,22 +64,37 @@ else {
     });
 }
 
+if (ForceWordBtn) {
+    ForceWordBtn.addEventListener("click", () => {
+        const word = WordInput.value.trim();
+        if (!word) {
+            displayError("Please input a word");
+            return;
+        }
+
+        const normalizedWord = word.toLowerCase();
+        shouldRevealSecretVideo = normalizedWord === "neighbour" && lastSubmittedWord === "hello";
+        lastSubmittedWord = normalizedWord;
+        displayFallbackWord(word);
+    });
+}
+
 //multiplier GUI thingy
 if (MultiplierGUI && ResetMultipliersBtn) {
 
     //letter multiplier BOOT-Tons
     document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
         radio.addEventListener("change", (e) => {
-            currentLetterMultiplier = e.target.value === "none" ? null : parseInt(e.target.value);
+            currentLetterMultiplier = e.target.value === "blank" ? 0 : parseInt(e.target.value, 10);
             const wordDisplay = document.querySelector(".WordDisplay");
-            if (wordDisplay) { 
-                if (currentLetterMultiplier) {
+            if (wordDisplay) {
+                if (currentLetterMultiplier !== null) {
                     wordDisplay.classList.add("interactive");
                 } else {
                     wordDisplay.classList.remove("interactive");
                 }
             }
-            updateLetterValue()
+            updateLetterValue();
         });
     });
 
@@ -75,11 +110,11 @@ if (MultiplierGUI && ResetMultipliersBtn) {
     ResetMultipliersBtn.addEventListener("click", () => {
         letterMultipliers = {};
         wordMultiplier = 1;
-        currentLetterMultiplier = null;
+        currentLetterMultiplier = 0;
 
         // reset radio (aka for the interactives) buttons
         document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
-            radio.checked = radio.value === "none";
+            radio.checked = radio.value === "blank";
         });
         document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
             radio.checked = radio.value === "none";
@@ -101,14 +136,6 @@ if (MultiplierGUI && ResetMultipliersBtn) {
         const letterIndex = parseInt(letterSpan.getAttribute("data-index"));
         if (isNaN(letterIndex)) return;
 
-        // If "none" is selected, remove any multiplier from the letter
-        if (currentLetterMultiplier === null) {
-            delete letterMultipliers[letterIndex];
-            letterSpan.classList.remove("multiplied");
-            letterSpan.removeAttribute("data-multiplier");
-        } else {
-        
-        // Toggle multiplier for this letter
         if (letterMultipliers[letterIndex] === currentLetterMultiplier) {
             delete letterMultipliers[letterIndex];
             letterSpan.classList.remove("multiplied");
@@ -118,7 +145,6 @@ if (MultiplierGUI && ResetMultipliersBtn) {
             letterSpan.classList.add("multiplied");
             letterSpan.setAttribute("data-multiplier", `${currentLetterMultiplier}x`);
         }
-    }
         
         updateLetterValue();
     });
@@ -170,7 +196,111 @@ function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+function renderHistory() {
+    if (!HistoryList) return;
+
+    HistoryList.innerHTML = "";
+
+    if (!historyEntries.length) {
+        const emptyState = document.createElement("p");
+        emptyState.className = "HistoryEmpty";
+        emptyState.textContent = "No recent words yet.";
+        HistoryList.appendChild(emptyState);
+        return;
+    }
+
+    historyEntries.forEach(entry => {
+        const historyItem = document.createElement("button");
+        historyItem.type = "button";
+        historyItem.className = "HistoryItem";
+        if (entry.fallback) {
+            historyItem.classList.add("HistoryItemFallback");
+            historyItem.textContent = `${entry.word} (manual)`;
+        } else {
+            historyItem.textContent = entry.word;
+        }
+        historyItem.addEventListener("click", () => {
+            if (entry.fallback) {
+                displayFallbackWord(entry.word);
+            } else {
+                displayWord(entry.data);
+            }
+        });
+        HistoryList.appendChild(historyItem);
+    });
+}
+
+function addToHistory(data, fallback = false) {
+    if (!data) return;
+
+    const word = capitalize(data?.[0]?.word || data?.word || "");
+    if (!word) return;
+
+    const existingIndex = historyEntries.findIndex(entry => entry.word.toLowerCase() === word.toLowerCase());
+
+    if (existingIndex >= 0) {
+        historyEntries.splice(existingIndex, 1);
+    }
+
+    historyEntries.unshift({ word, data, fallback });
+    historyEntries = historyEntries.slice(0, 8);
+    renderHistory();
+}
+
 //Display data and stuff idk
+function displayFallbackWord(word) {
+    const normalizedWord = (word || "").trim();
+    if (!normalizedWord) {
+        displayError("Please input a word");
+        return;
+    }
+
+    currentWord = normalizedWord;
+    letterMultipliers = {};
+    wordMultiplier = 1;
+    currentLetterMultiplier = 0;
+    currentWordMode = "fallback";
+
+    if (MultiplierGUI) {
+        document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "blank";
+        });
+        document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "none";
+        });
+    }
+
+    Card.textContent = "";
+    Card.style.display = "flex";
+    addToHistory({ word: normalizedWord }, true);
+
+    const wordDisplay = document.createElement("h1");
+    wordDisplay.className = "WordDisplay";
+    wordDisplay.textContent = capitalize(normalizedWord);
+    Card.appendChild(wordDisplay);
+
+    const fallbackNote = document.createElement("p");
+    fallbackNote.className = "Section";
+    fallbackNote.textContent = "Definition unavailable — score calculated from letters only.";
+    Card.appendChild(fallbackNote);
+
+    const letterValueSection = document.createElement("p");
+    letterValueSection.className = "Section";
+    letterValueSection.textContent = "Letter Value:";
+    Card.appendChild(letterValueSection);
+
+    const letterValueDisplay = document.createElement("p");
+    letterValueDisplay.className = "LetterValue";
+    letterValueDisplay.id = "LetterValueDisplay";
+    Card.appendChild(letterValueDisplay);
+
+    if (MultiplierGUI) {
+        MultiplierGUI.style.display = "flex";
+    }
+
+    updateLetterValue();
+}
+
 function displayWord(data){
     console.log(data);
     const { word, phonetic, meanings, phonetics } = data[0];
@@ -179,12 +309,13 @@ function displayWord(data){
     currentWord = word;
     letterMultipliers = {};
     wordMultiplier = 1;
-    currentLetterMultiplier = null;
+    currentLetterMultiplier = 0;
+    currentWordMode = "normal";
 
   // multiplier GUI reset aswell
     if (MultiplierGUI) {
         document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
-            radio.checked = radio.value === "none";
+            radio.checked = radio.value === "blank";
         });
         document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
             radio.checked = radio.value === "none";
@@ -203,6 +334,14 @@ function displayWord(data){
 
     Card.textContent = "";
     Card.style.display='flex';
+    addToHistory(data);
+
+    if (shouldRevealSecretVideo) {
+        showSecretVideo();
+    } else {
+        hideSecretVideo();
+    }
+    shouldRevealSecretVideo = false;
 
     //word
     const wordDisplay = document.createElement("h1");
@@ -283,6 +422,44 @@ function displayWord(data){
     updateLetterValue();
 }
 
+function showSecretVideo() {
+    if (!Card) return;
+
+    hideSecretVideo();
+
+    const container = document.createElement("div");
+    container.className = "SecretVideoContainer";
+
+    const heading = document.createElement("p");
+    heading.className = "Section";
+    heading.textContent = "Secret Video:";
+    container.appendChild(heading);
+
+    const video = document.createElement("video");
+    video.className = "SecretVideo";
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+
+    const source = document.createElement("source");
+    source.src = "Hello_neighbour_secret.mp4";
+    source.type = "video/mp4";
+    video.appendChild(source);
+
+    container.appendChild(video);
+    Card.appendChild(container);
+}
+
+function hideSecretVideo() {
+    if (!Card) return;
+
+    const existing = Card.querySelector(".SecretVideoContainer");
+    if (existing) {
+        existing.remove();
+    }
+}
+
 // FUCK, ITS MATH, VIMEAN I NEED YOU.
 function getLetterValue(letter, multiplier = 1) {
     const scores = {
@@ -308,11 +485,12 @@ function updateLetterValue() {
     const display = document.getElementById("LetterValueDisplay");
     if (!display) return;
 
-    let totalValue = 0
+    let totalValue = 0;
 
     for (let i = 0; i < currentWord.length; i++) {
         const char = currentWord[i];
-        const letterMultiplier = letterMultipliers[i] || 1;
+        const hasLetterMultiplier = Object.prototype.hasOwnProperty.call(letterMultipliers, i);
+        const letterMultiplier = hasLetterMultiplier ? letterMultipliers[i] : 1;
         totalValue += getLetterValue(char, letterMultiplier);
     }
 
@@ -336,16 +514,20 @@ function updateLetterValue() {
              letterSpan.textContent = capitalize(char);
 
             const baseValue = getLetterValue(char, 1);
-            const letterMultiplier = letterMultipliers[i] || 1;
+            const hasLetterMultiplier = Object.prototype.hasOwnProperty.call(letterMultipliers, i);
+            const letterMultiplier = hasLetterMultiplier ? letterMultipliers[i] : 1;
             const letterValue = getLetterValue(char, letterMultiplier);
-            const multiplierText = letterMultiplier > 1 ? ` × ${letterMultiplier}` : "";
+            const multiplierText = letterMultiplier > 1 ? ` × ${letterMultiplier}` : letterMultiplier === 0 ? " × 0" : "";
             letterSpan.title = `${capitalize(char)}: ${letterValue} point${letterValue === 1 ? "" : "s"}${multiplierText}${letterMultiplier > 1 ? ` (base ${baseValue} point${baseValue === 1 ? "" : "s"})` : ""}`;
 
+            if (hasLetterMultiplier) {
+                letterSpan.classList.add("multiplied");
+                letterSpan.setAttribute("data-multiplier", `${letterMultiplier}x`);
+            }
 
-             if (letterMultipliers[i]) {
-                    letterSpan.classList.add("multiplied");
-                    letterSpan.setAttribute("data-multiplier", `${letterMultipliers[i]}x`);
-                }
+            if (currentWordMode === "fallback") {
+                letterSpan.classList.add("fallbackLetter");
+            }
                 wordDisplay.appendChild(letterSpan);
         }
     }
@@ -355,7 +537,7 @@ function updateLetterValue() {
 
 
  
-function displayError(message){
+function displayError(message, fallbackWord = ""){
     const errorDisplay = document.createElement("p");
     errorDisplay.textContent = message;
     errorDisplay.classList.add("ErrorDisplay");
@@ -363,6 +545,15 @@ function displayError(message){
     Card.textContent = "";
     Card.style.display = "flex";
     Card.appendChild(errorDisplay);
+
+    if (fallbackWord) {
+        const fallbackButton = document.createElement("button");
+        fallbackButton.type = "button";
+        fallbackButton.className = "ForceWordBtn";
+        fallbackButton.textContent = "Use Word Anyway";
+        fallbackButton.addEventListener("click", () => displayFallbackWord(fallbackWord));
+        Card.appendChild(fallbackButton);
+    }
 }
 
              

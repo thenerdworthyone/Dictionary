@@ -24,14 +24,20 @@
   <div class="Card" style="display:none">
 
   </div>
+
+  <div class="HistoryPanel">
+    <button type="button" class="HistoryToggle" aria-expanded="false">History</button>
+    <div class="HistoryList" hidden></div>
+  </div>
+
 <!--Multiplier GUI -->
-  <div class="MultiplierGUI" style="display:flex">
+  <div class="MultiplierGUI" style="display:none">
     <div class="MultiplierSection"> 
      <!--letter mult -->
       <h3> Letter Multiplier </h3>
       <div class="MultiplierOptions">
         <label>
-           <input type="radio" name="letterMultiplier" value="none" checked> None
+           <input type="radio" name="letterMultiplier" value="blank" checked> Blank
         </label>
         <label>
           <input type="radio" name="letterMultiplier" value="2"> Double (2x)
