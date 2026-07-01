@@ -73,7 +73,7 @@ if (MultiplierGUI && ResetMultipliersBtn) {
             const wordDisplay = document.querySelector(".WordDisplay");
             if (wordDisplay) { 
                 if (currentLetterMultiplier > 0) {
-                 wordDisplay.classList.add("interactive");
+                  wordDisplay.classList.add("interactive");
                 } else {
                   wordDisplay.classList.remove("interactive");
                 }
@@ -440,7 +440,7 @@ function updateLetterValue() {
             const ALTletterMultiplier = Object.prototype.hasOwnProperty.call(letterMultipliers, i);
             const letterMultiplier = ALTletterMultiplier ? letterMultipliers[i] : 1;
             const letterValue = getLetterValue(char, letterMultiplier);
-            const multiplierText = letterMultiplier > 1 ? ` → ${letterMultiplier} ×` : letterMultiplier === 0 ? " × 0" : "";
+            const multiplierText = letterMultiplier > 1 ? ` → ${letterMultiplier} ×` : letterMultiplier === 0 ? `× ${baseValue}` : "";
             letterSpan.title = `${capitalize(char)}: ${letterValue} point${letterValue === 1 ? "" : "s"}${multiplierText}${letterMultiplier > 1 ? ` (base ${baseValue} point${baseValue === 1 ? "" : "s"})` : ""}`;
 
 
@@ -463,6 +463,5 @@ function displayError(message){
     Card.textContent = "";
     Card.style.display = "flex";
     Card.appendChild(errorDisplay);
-}
+}      
 
-             
