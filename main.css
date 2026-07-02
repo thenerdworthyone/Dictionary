@@ -55,8 +55,23 @@ p{
 }
 /* base structure  end*/
 
+/* IF error is shown, make user able to ignore it, only caring about value.*/
+.ignoreErrorBTN{
+  padding: 0.6rem 1.2rem;
+  font-weight: bold;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.letter.ignoreError{
+  color: #ff6b6b;
+  font-weight: bold;
+}
 
-/* specific elements that change*/
+
+/* specific elements that change (displays and such)*/
 
 .WordDisplay{
   font-size: clamp(1.5rem, 3vw, 2.5rem);
@@ -83,6 +98,12 @@ p{
  color: white;
  font-size: 1rem;
  font-family: 'Minion Pro', serif;
+}
+
+/* unable to think of a better name  + still about display*/
+.letter.ALTignoreError{
+  color: #ff6b6b;
+  font-weight: bold;
 }
 
 /* Break very long words (e.g. pneumonoultramicroscopicsilicovolcanoconiosis) */
@@ -351,6 +372,13 @@ button[type='submit']{
 
 .HistoryItem:hover{
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* history of error, but ignored to find letter value only */
+.HistoryItemErrorIgnored{
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid rgba(255, 107, 107, 0.6);
+  color: #ffb3b3;
 }
 
 /* "video" */

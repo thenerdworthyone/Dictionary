@@ -8,6 +8,7 @@ const MultiplierGUI = document.querySelector(".MultiplierGUI");
 const ResetMultipliersBtn = document.querySelector(".ResetMultipliers");
 const HistoryToggle = document.querySelector(".HistoryToggle");
 const HistoryList = document.querySelector(".HistoryList");
+const IgnoreErrorBtn = document.querySelector(".ignoreErrorBTN");
 
 //multiplier terms
 let currentWord = "";
@@ -16,6 +17,7 @@ let wordMultiplier = 1;
 let currentLetterMultiplier = 0;
 
 //history
+let currentWordMode = "normal";
 let historyEntries = [];
 let lastSubmittedWord = "";
 let EpicVideo = false;
@@ -52,7 +54,7 @@ else {
   
               catch (error){
                   console.error(error);
-                 displayError(error);
+                 displayError(error.message || error, word);
               }
  
         } 
@@ -62,6 +64,24 @@ else {
 
     });
 }
+// ignore button thingy (bypass error, gives letter value only)
+if (IgnoreErrorBtn) {
+    IgnoreErrorBtn.addEventListener("click", () => {
+        const word = WordInput.value.trim();
+        if (!word) {
+            displayError("Please input a word");
+            return;
+        }
+
+        const normalizedWord = word.toLowerCase();
+        EpicVideo = normalizedWord === "neighbour" && lastSubmittedWord === "hello";
+        lastSubmittedWord = normalizedWord;
+        displayIgnoreError(word);
+
+    });
+}
+
+
 
 //multiplier GUI thingy
 if (MultiplierGUI && ResetMultipliersBtn) {
@@ -199,31 +219,97 @@ function renderHistory() {
         const historyItem = document.createElement("button");
         historyItem.type = "button";
         historyItem.className = "HistoryItem";
+        if (entry.ignoreE) {
+            historyItem.classList.add("HistoryItemErrorIgnored");
+            historyItem.textContent = `${entry.word} (manually forced)`;
+        } else {
+            historyItem.textContent = entry.word;
+        }
         historyItem.textContent = entry.word;
         historyItem.addEventListener("click", () => {
+            if (entry.ignoreE) {
+                displayFallbackWord(entry.word);
+            } else {
             displayWord(entry.data);
+            }
         });
         HistoryList.appendChild(historyItem);
     });
 }
 
-function addToHistory(data) {
-    if (!data || !Array.isArray(data) || !data[0] || !data[0].word) return;
+function addToHistory(data, ignoreE = false) {
+    if (!data) return;
 
-    const word = capitalize(data[0].word);
+    const word = capitalize(data?.[0]?.word || data?.word || "");
+    if (!word) return;
+
     const existingIndex = historyEntries.findIndex(entry => entry.word.toLowerCase() === word.toLowerCase());
 
     if (existingIndex >= 0) {
         historyEntries.splice(existingIndex, 1);
     }
 
-    historyEntries.unshift({ word, data });
+    historyEntries.unshift({ word, data, ignoreE });
     historyEntries = historyEntries.slice(0, 8);
     renderHistory();
 }
 
 
 //Display data and stuff idk
+function displayIgnoreError(word) {
+    const normalizedWord = (word || "").trim();
+    if (!normalizedWord) {
+        displayError("Please input a word");
+        return;
+    }
+
+    currentWord = normalizedWord;
+    letterMultipliers = {};
+    wordMultiplier = 1;
+    currentLetterMultiplier = 0;
+    currentWordMode = "ignoreE";
+
+    if (MultiplierGUI) {
+        document.querySelectorAll('input[name="letterMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "blank";
+        });
+        document.querySelectorAll('input[name="wordMultiplier"]').forEach(radio => {
+            radio.checked = radio.value === "none";
+        });
+    }
+
+    Card.textContent = "";
+    Card.style.display = "flex";
+    addToHistory({ word: normalizedWord }, true);
+
+    const wordDisplay = document.createElement("h1");
+    wordDisplay.className = "WordDisplay";
+    wordDisplay.textContent = capitalize(normalizedWord);
+    Card.appendChild(wordDisplay);
+
+    const IgnoreErrorNote = document.createElement("p");
+    IgnoreErrorNote.className = "Section";
+    IgnoreErrorNote.textContent = "This word is not in the dictionary. Use it anyway?";
+    Card.appendChild(IgnoreErrorNote);
+
+    const letterValueSection = document.createElement("p");
+    letterValueSection.className = "Section";
+    letterValueSection.textContent = "Letter Value:";
+    Card.appendChild(letterValueSection);
+
+    const letterValueDisplay = document.createElement("p");
+    letterValueDisplay.className = "LetterValue";
+    letterValueDisplay.id = "LetterValueDisplay";
+    Card.appendChild(letterValueDisplay);
+
+    if (MultiplierGUI) {
+        MultiplierGUI.style.display = "flex";
+    }
+
+    updateLetterValue();
+}
+
+
 function displayWord(data){
     console.log(data);
     const { word, phonetic, meanings, phonetics } = data[0];
@@ -233,6 +319,7 @@ function displayWord(data){
     letterMultipliers = {};
     wordMultiplier = 1;
     currentLetterMultiplier = 0;
+    currentWordMode = "normal";
 
   // multiplier GUI reset aswell
     if (MultiplierGUI) {
@@ -444,9 +531,13 @@ function updateLetterValue() {
             letterSpan.title = `${capitalize(char)}: ${letterValue} point${letterValue === 1 ? "" : "s"}${multiplierText}${letterMultiplier > 1 ? ` (base ${baseValue} point${baseValue === 1 ? "" : "s"})` : ""}`;
 
 
-             if (ALTletterMultiplier) {
+                if (ALTletterMultiplier) {
                     letterSpan.classList.add("multiplied");
                     letterSpan.setAttribute("data-multiplier", `${letterMultiplier}x`);
+                }
+
+                if (currentWordMode === "ignoreE") {
+                    letterSpan.classList.add("ALTignoreError");
                 }
                 wordDisplay.appendChild(letterSpan);
         }
@@ -454,8 +545,8 @@ function updateLetterValue() {
 }
 
 
- 
-function displayError(message){
+//error dispaly and such
+function displayError(message, IgnoreError = "") {
     const errorDisplay = document.createElement("p");
     errorDisplay.textContent = message;
     errorDisplay.classList.add("ErrorDisplay");
@@ -463,5 +554,14 @@ function displayError(message){
     Card.textContent = "";
     Card.style.display = "flex";
     Card.appendChild(errorDisplay);
-}      
-
+     
+    //ignore error (incomplete)
+    if (IgnoreError) {
+        const IgnoreErrorBtn = document.createElement("button");
+            IgnoreErrorBtn.type = "button";
+            IgnoreErrorBtn.className = "ignoreErrorBTN";
+            IgnoreErrorBtn.textContent = "Use Word Anyway";
+            IgnoreErrorBtn.addEventListener("click", () => displayIgnoreError(IgnoreError));
+            Card.appendChild(IgnoreErrorBtn);
+}
+}
