@@ -9,6 +9,12 @@
     font-weight: bold;
 }
 
+.Intro p{
+    font-size: 1rem;
+    color: red;
+    font-family: 'Minion Pro', serif;
+}
+
 .Card{
   /* sum code that adjusts the size */
   width: min(900px, 95%);
@@ -335,6 +341,13 @@ button[type='submit']{
   font-size: 1rem;
 }
 
+.HistoryItemRow{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
 .HistoryToggle.active{
   background: #1d4ed8;
 }
@@ -364,6 +377,7 @@ button[type='submit']{
   color: white;
   font-family: 'Minion Pro', serif;
   font-size: 1rem;
+  flex: 1;
 }
 
 .HistoryItem{
@@ -373,6 +387,27 @@ button[type='submit']{
 .HistoryItem:hover{
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* delete history */
+.HistoryRemoveButton{
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.HistoryRemoveButton:hover{
+  background: rgba(255, 107, 107, 0.9);
+}
+
 
 /* history of error, but ignored to find letter value only */
 .HistoryItemErrorIgnored{

@@ -31,6 +31,43 @@ if (HistoryToggle && HistoryList) {
     });
 }
 
+// cookies usuage (saving history to client side)
+function setCookie(name, value, days) {
+    const expires = days ? "; expires=" + new Date(Date.now() + days * 864e5).toUTCString() : "";
+    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; path=/`;
+}
+
+function getCookie(name) {
+    const cookieString = document.cookie;
+    const cookieParts = cookieString ? cookieString.split("; ") : [];
+    for (const part of cookieParts) {
+        const [key, val] = part.split("=");
+        if (key === name) {
+            return decodeURIComponent(val || "");
+        }
+    }
+    return null;
+}
+
+function saveCookie() {
+    const cookieHistory = historyEntries.map(entry => ({ word: entry.word, ignoreE: entry.ignoreE }));
+    setCookie("dictionaryHistory", JSON.stringify(cookieHistory), 30);
+}
+
+function loadCookie() {
+    const cookieValue = getCookie("dictionaryHistory");
+    if (!cookieValue) return;
+    try {
+        const parsed = JSON.parse(cookieValue);
+        if (!Array.isArray(parsed)) return;
+        historyEntries = parsed.slice(0, 8).map(entry => ({ word: entry.word, ignoreE: Boolean(entry.ignoreE) }));
+    } catch (error) {
+        console.warn("Failed to parse history cookie:", error);
+    }
+}
+loadCookie();
+renderHistory();
+
 
 // Error catcher and logging
 if (!DictAPI || !WordInput || !Card) {
@@ -64,6 +101,7 @@ else {
 
     });
 }
+
 // ignore button thingy (bypass error, gives letter value only)
 if (IgnoreErrorBtn) {
     IgnoreErrorBtn.addEventListener("click", () => {
@@ -80,8 +118,6 @@ if (IgnoreErrorBtn) {
 
     });
 }
-
-
 
 //multiplier GUI thingy
 if (MultiplierGUI && ResetMultipliersBtn) {
@@ -216,6 +252,19 @@ function renderHistory() {
     }
 
     historyEntries.forEach(entry => {
+        const historyRow = document.createElement("div");
+        historyRow.className = "HistoryItemRow";
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "HistoryRemoveButton";
+        removeButton.textContent = "✕";
+        removeButton.setAttribute("aria-label", `Remove ${entry.word} from history`);
+        removeButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            removeFromHistory(entry.word);
+        });
+
         const historyItem = document.createElement("button");
         historyItem.type = "button";
         historyItem.className = "HistoryItem";
@@ -226,15 +275,31 @@ function renderHistory() {
             historyItem.textContent = entry.word;
         }
         historyItem.textContent = entry.word;
-        historyItem.addEventListener("click", () => {
+        historyItem.addEventListener("click", async () => {
             if (entry.ignoreE) {
                 displayFallbackWord(entry.word);
+                return;
             } else {
-            displayWord(entry.data);
+                displayWord(entry.data);
+                return;
+            }
+            try {
+                const wordData = await getWord(entry.word);
+                displayWord(wordData);
+            } catch (error) {
+                displayError(error.message || error, entry.word);
             }
         });
-        HistoryList.appendChild(historyItem);
+        historyRow.appendChild(removeButton);
+        historyRow.appendChild(historyItem);
+        HistoryList.appendChild(historyRow);
     });
+}
+
+function removeFromHistory(word) {
+    historyEntries = historyEntries.filter(entry => entry.word.toLowerCase() !== word.toLowerCase());
+    saveCookie();
+    renderHistory();
 }
 
 function addToHistory(data, ignoreE = false) {
@@ -251,6 +316,7 @@ function addToHistory(data, ignoreE = false) {
 
     historyEntries.unshift({ word, data, ignoreE });
     historyEntries = historyEntries.slice(0, 8);
+    saveCookie();
     renderHistory();
 }
 
