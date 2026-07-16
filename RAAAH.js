@@ -20,16 +20,51 @@ let currentLetterMultiplier = 0;
 let currentWordMode = "normal";
 let historyEntries = [];
 let lastSubmittedWord = "";
-let EpicVideo = false;
+let EpicVideo = false; 
+let HistoryToggleHands = false;
+
+// mobile compatibility for history toggle
+function toggleHistoryPanel(forceState = null) {
+    if (!HistoryToggle || !HistoryList) return;
+
+    const isExpanded = HistoryToggle.getAttribute("aria-expanded") === "true";
+    const nextExpanded = forceState === null ? !isExpanded : forceState;
+
+    HistoryToggle.setAttribute("aria-expanded", String(nextExpanded));
+    HistoryList.hidden = nextExpanded;
+    HistoryToggle.classList.toggle("active", !nextExpanded);
+}
 
 if (HistoryToggle && HistoryList) {
-    HistoryToggle.addEventListener("click", () => {
-        const isExpanded = HistoryToggle.getAttribute("aria-expanded") === "true";
-        HistoryToggle.setAttribute("aria-expanded", String(!isExpanded));
-        HistoryList.hidden = isExpanded;
-        HistoryToggle.classList.toggle("active", !isExpanded);
+    const HandleHistoryToggle = (event) => {
+        if (event.type === "click" && HistoryToggleHands) {
+            HistoryToggleHands = false;
+            return;
+        }
+        if (event.type === "touchend" || event.type === "pointerup") {
+            HistoryToggleHands = true;
+            window.setTimeout(() => {
+                HistoryToggleHands = false;
+            }, 120);
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        toggleHistoryPanel();
+    };
+    HistoryToggle.addEventListener("click", HandleHistoryToggle);
+    HistoryToggle.addEventListener("touchend", HandleHistoryToggle, { passive: false });
+    HistoryToggle.addEventListener("pointerup", HandleHistoryToggle);
+    HistoryToggle.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleHistoryPanel();
+        }
     });
 }
+
+
+
 
 // cookies usuage (saving history to client side)
 function setCookie(name, value, days) {
@@ -279,12 +314,16 @@ function renderHistory() {
             if (entry.ignoreE) {
                 displayFallbackWord(entry.word);
                 return;
-            } else {
+            } 
+
+            if (entry.data) {
                 displayWord(entry.data);
                 return;
             }
+
             try {
                 const wordData = await getWord(entry.word);
+                entry.data = wordData;
                 displayWord(wordData);
             } catch (error) {
                 displayError(error.message || error, entry.word);
@@ -534,6 +573,13 @@ function VideoHide(){
     if (existing) {
         existing.remove();
     }
+}
+
+// shouldn't belong here but im to lazy to move it
+// p.s this code is just for ignoring error
+function displayFallbackWord(word) {
+    if (!word) return;
+    displayIgnoreError(word);
 }
 
 // ITS MATH, SEA SALT I NEED YOU.

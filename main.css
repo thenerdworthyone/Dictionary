@@ -339,6 +339,8 @@ button[type='submit']{
   cursor: pointer;
   font-family: 'Minion Pro', serif;
   font-size: 1rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .HistoryItemRow{
@@ -378,6 +380,8 @@ button[type='submit']{
   font-family: 'Minion Pro', serif;
   font-size: 1rem;
   flex: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .HistoryItem{
@@ -402,6 +406,8 @@ button[type='submit']{
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .HistoryRemoveButton:hover{
