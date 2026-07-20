@@ -186,6 +186,46 @@ button[type='submit']{
 }
 /* Break very long words END*/
 
+/* Underline for common letters */
+.letter.underlined {
+  text-decoration: underline;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 2px;
+  text-decoration-color: #0a0a0a;
+}
+
+/* Underline toggle GUI */
+.UnderlineOptionsGUI {
+  width: min(900px, 95%);
+  max-width: 95vw;
+  background: #0F172A;
+  color: #F9FAFB;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.UnderlineToggleLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-family: 'Minion Pro', serif;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.UnderlineToggleLabel input[type="checkbox"] {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #0a0a0a;
+;
+}
+
+
 /* GUI for multiplier (copy and paste my king) */
 .MultiplierGUI{
   width: min(450px, 95%);

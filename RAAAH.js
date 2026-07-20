@@ -23,6 +23,10 @@ let lastSubmittedWord = "";
 let EpicVideo = false; 
 let HistoryToggleHands = false;
 
+//Common letter rule (modify here to change which letters are considered common)
+let underlineCommonLetters = false;
+const commonLetters = new Set(['a', 'e', 'h', 'i', 'l', 'n', 'o', 'r', 's', 't']);
+
 // mobile compatibility for history toggle
 function toggleHistoryPanel(forceState = null) {
     if (!HistoryToggle || !HistoryList) return;
@@ -254,6 +258,15 @@ if (MultiplierGUI && ResetMultipliersBtn) {
         letterSpan._tooltip.remove();
         delete letterSpan._tooltip;
     }, true);
+}
+
+// Underline toggle function
+const underlineToggle = document.querySelector('.UnderlineToggle');
+if (underlineToggle) {
+    underlineToggle.addEventListener('change', (e) => {
+        underlineCommonLetters = e.target.checked;
+        updateLetterValue();
+    });
 }
 
 //fetch data
@@ -651,6 +664,12 @@ function updateLetterValue() {
                 if (currentWordMode === "ignoreE") {
                     letterSpan.classList.add("ALTignoreError");
                 }
+
+                // Add underline class for common letters if toggle is enabled
+                if (underlineCommonLetters && commonLetters.has(char.toLowerCase())) {
+                    letterSpan.classList.add("underlined");
+                }
+
                 wordDisplay.appendChild(letterSpan);
         }
     }
