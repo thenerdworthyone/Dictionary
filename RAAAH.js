@@ -274,7 +274,7 @@ async function getWord(word){
     const Dict = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
     const response = await fetch(Dict);
     if (!response.ok) { 
-        throw new Error("Non-existing word data/ unable to fetch");
+        throw new Error("Non-existing word data");
     }
     return await response.json();
 }
