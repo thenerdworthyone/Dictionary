@@ -407,7 +407,7 @@ function displayIgnoreError(word) {
 
     const IgnoreErrorNote = document.createElement("p");
     IgnoreErrorNote.className = "Section";
-    IgnoreErrorNote.textContent = "This word is not in the dictionary. Use it anyway?";
+    IgnoreErrorNote.textContent = "This word is not in the dictionary.";
     Card.appendChild(IgnoreErrorNote);
 
     const letterValueSection = document.createElement("p");
